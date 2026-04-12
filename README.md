@@ -1,6 +1,8 @@
 # Do Serving Methods Affect Soda Enjoyment?
 A Factorial Experiment with Regression Analysis
 
+Factorial experiment analyzing how serving methods affect soda enjoyment.
+
 ---
 
 ## Project Overview
