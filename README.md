@@ -137,3 +137,9 @@ soda-experiment-analysis/
 - Introduce additional variables (temperature, carbonation level)  
 - Improve experimental control (timing, serving consistency)  
 - Explore mixed-effects models for participant-level variation  
+
+---
+
+## Visualization
+
+![Enjoyment Scores by Treatment](plots/boxplot.png)
