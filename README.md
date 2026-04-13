@@ -142,4 +142,4 @@ soda-experiment-analysis/
 
 ## Visualization
 
-![Enjoyment Scores by Treatment](plots/boxplot.png)
+![Enjoyment Scores by Treatment](plot/boxplot.png)
