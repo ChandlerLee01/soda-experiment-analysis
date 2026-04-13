@@ -115,7 +115,7 @@ soda-experiment-analysis/
 - README.md  
 - analysis.Rmd  
 - data/  
-- plots/  
+- plot/  
 
 ---
 
