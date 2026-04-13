@@ -1,0 +1,356 @@
+---
+title: "Soda Taste"
+author: "Chandler Lee"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(knitr)
+library(dplyr)
+
+```
+
+# Introduction
+
+When it comes to food and beverage consumption, people often focus on flavor or temperature when explaining why they like it or not. But studies in sensory have shown that how we experience a drink does not just depend on the ingredients, it could also depend on how the drink is served and how we drink it. This is especially true with carbonated beverages like soda, coke, or so, the way we pour it into another container and the way we drink it might change how fizzy or refreshing it feels. Even though these factors seem won't do anything to its flavor, but they might actually affect how enjoyale the soda can bring to the consumer. 
+
+For example, some people claim that they feels the soda is more refreshing when drinking it directly from the can, while others prefer it served in a glass and drink it with a straw, and some people thinks that it does not make much of a difference, they taste the same. These are not just personal preferences, because research has shown that things like the container you drink from or how the drink is poured can actually change a person's perception of taste, mouth feel, and even how refreshing it feels. According to Spence and Wan, "the vessels from which we drink exert a far greater influence over our perception of the sensory and hedonic qualities of the contents, and on our consumption behaviours, than is often realized"(Spence and Wan, 2014)
+
+Another important aspect is carbonation, which is a big part of why people enjoy soda in the first place. According to a research conducted by Viejo, Torrico, Dunshea and Fuentes, "Consumer assessment and acceptability of carbonated beverages are mainly based on carbonation, foam, and bubbles, as a flat carbonated beverage is usually perceived as low quality."(Viejo et al., 2019) These factors mentioned can surely change based on how the soda is poured. For example, pouring down the side of a glass tends to keep more carbonation, while pouring straight into the glass makes the drink have more foam. Therefore, even if two sodas are chemically identical, how they're poured and consumed still might make one seem more enjoyable than the other.
+
+Even though these effects are known, but there are not so many researches that both focused on pouring method and consumption method in a full factorial experiment. Most of them focus on some aspects like branding or ingredients, instead of how people actually drink the product. And for this reason, I conducted this experiment to explore whether the method of pouring and the way we consume will have any impact on the enjoyment of drinking the soda. 
+
+This experiment is designed to explore not just whether each factor has a effect on participants' enjoyment, but also whether there is an interaction between them. For example, it is possible that using a straw only improves enjoyment when soda is poured one particular way. A factorial design should allow us to test that possibility explicitly.
+
+The results from this study may have practical implications for food service, packaging design, or even personal consumption habits. If simple changes in how we pour or consume soda can change our experience of it, that's something both consumers and companies might care about. And to analyze the results, I will use a linear regression model to estimate treatment effects and test for statistical differences between combinations.
+
+# Methods
+
+## Experimental Design and Factors:
+
+This experiment investigates two factors that might influence how enjoyable a soda tastes: the method of pouring and the method of consumption. Together, they form a $3 \times 2 = 6$ full factorial design.
+
+### Method of pouring:
+
+  1. Down the side of the glass
+  
+  2. Straight onto the center of a glass
+  
+  3. Leave it in the can/bottle
+  
+### Method of consumption:
+
+  1. Via a straw
+  
+  2. Straight from the container
+
+To collect data for the study, I conducted a pilot study first. I asked a couple of friends who also study at UCSB to my house during the weekend, and I collected my data from each of them, but only used the first 6 participants for the pilot study.
+
+Each participant tasted the soda under all six combinations, making this a randomized complete block design, RCBD, with participant as the blocking variable. And this made it a $3*2 = 6$ full factorial design study, with each participant rated all six combinations. I used a 0 ~ 10 enjoyment scale, where higher numbers meant they liked the way the soda is served more. 
+
+The reason why I conducted a pilot study first was that I could calculate the sample size for the full study. Specifically, I needed estimates of both the variability across treatment combinations and the residual variability (within participants) from real pilot data in order to conduct a power analysis. Without a pilot, it would be hard to show how much variation to expect, or how many people would be needed to detect real differences between treatment conditions.
+
+### Photographic Documentation of Data Collection & Soda Used in This Experiment
+
+![Soda Used in this Experiment](data/Soda.jpg)
+
+![Dataset for Pilot Study](data/Pilot_Study_Data.jpg)
+
+![Dataset for Full Study](data/Full_Study_Data.jpg)
+
+## Statistical Methods
+
+To analyze the data, I will use a linear regression model that includes both main effects — pouring method and consumption method — as well as their interaction. The model will be fit using the `lm()` function in R:
+
+`lm(score ~ pouring_method * consumption_method, data = full_data)`
+
+Even though each participant tries all six soda combinations, this model helps estimate how the average enjoyment score changes depending on the pouring and drinking method. Since the same participants rated every combination, this is a randomized complete block design (RCBD), with participant as the blocking variable. That way, I can control for personal differences in taste and focus on how the treatments actually affect enjoyment.
+
+I chose linear regression instead of ANOVA because lm() makes it easier to see the actual estimates, standard errors, and p-values for each effect — especially the interaction. This setup is common in sensory studies like this.
+
+After fitting the model, I’ll look at the p-values for the main effects and interaction. If any p-values are below 0.05, I’ll consider that effect statistically significant. If that happens, I’ll run follow-up comparisons like TukeyHSD to see which specific groups differ. 
+
+## Hypotheses
+
+The hypotheses for this study focus on whether either of the two main factors — pouring method and consumption method — or their interaction have any effect on enjoyment scores.
+
+**Null Hypothesis ($H_0$):** There is no effect of pouring method, no effect of consumption method, and no interaction effect. In other words, all group means are equal, and any observed differences are due to random variation.
+
+**Alternative Hypothesis ($H_A$):** At least one of the following is true: (1) pouring method affects enjoyment, (2) consumption method affects enjoyment, or (3) there is an interaction between the two that affects enjoyment.
+
+I will use p-values from the linear regression model to test these hypotheses at a 0.05 significance level. If any of the predictors have p-values below 0.05, I will consider that effect statistically significant and follow up with additional comparisons if needed.
+
+## Statistical Assumptions
+
+The linear regression model relies on several standard assumptions:
+  - Linearity: The relationship between predictors and the outcome is additive and linear.
+  - Normality of residuals: The residuals from the model should be approximately normally distributed.
+  - Equal variances: The residuals should have constant variance across levels of the predictors
+  - Independence: Observations are independent of each other.
+
+Since each participant rates all six combinations, the study uses a **blocked within-subject design**. This helps address individual-level variability and supports the independence assumption across participants.
+
+After fitting the model, I will check whether these assumptions are met using the following diagnostic tools:
+
+1. Histogram of residuals — to check for overall shape and symmetry  
+2. Q-Q plot — to assess normality of the residuals  
+3. Residuals vs. fitted values — to assess constant variance  
+4. Residuals vs. order of data collection — to detect any time-related effects or drift  
+5. Shapiro–Wilk test — to formally test normality
+
+If the residuals don’t look normal or the Shapiro-Wilk test gives a low p-value, I’ll follow up with a permutation test. That lets me test for effects without relying on the normality assumption.
+
+## Technical Issues
+
+One small issue was carbonation fading if the soda sat out too long, so no matter which combination was tasted first, there must be a couple of the combinations that were tasted later, which might altered the result. And all I can do is do not open the can until the participant is ready to taste it;
+
+Another issue was that people tended to have different ways, in my pilot study data collection, it showed that only a couple of participants tended to use the 0 to 10 full scale, but almost all other participants only scored in 5 ~ 10 range.
+
+# Results
+
+## Pilot Study & Sample Size Calculation
+To determine the required sample size for my full study, I used estimates of treatment effects and standard errors from the pilot data. I first fit a linear regression model to the pilot dataset using the interaction between pouring and consumption methods:
+```{r}
+# Pilot Study
+pilot <- read_excel("data/soda_Pilot.xlsx", skip = 1)
+colnames(pilot) <- c("participant", "pouring_method", "consumption_method",
+                     "treatment_label", "score")
+
+# Fit linear model to extract coefficients and residuals
+model1 <- lm(score ~ pouring_method * consumption_method, data = pilot)
+kable(summary(model1)$coefficients)
+```
+The regression output showed no significant main effects or interaction effects at the $\alpha = 0.05$ level. The intercept was estimated at 8.0, and the largest standard errors were associated with the interaction terms. I used the estimated coefficients and standard errors to simulate power using the power_factorial_32() function, just as we did in Lab 8.
+
+```{r}
+# power_factorial_32() function
+power_factorial_32 <- function(beta_mean, beta_se, replicates, 
+                               iter=1000, alpha=0.05){
+  
+  # Make sure inputs are proper
+  if(length(beta_mean) != 6){
+    stop("beta_mean must be a vector with 6 values")
+  } 
+  if(length(beta_se) != 6) {
+    stop("beta_se must be a vector with 6 values")
+  } 
+  
+  # Generate data frame with NA outcome values
+  sim_data <- data.frame(
+    outcome = rep(NA, (6*replicates)),
+    x1 = rep(c(0,0,0,1,1,1), replicates),
+    x2 = rep(c(0,0,1,0,0,1), replicates),
+    x3 = rep(c(0,1,0,0,1,0), replicates)
+  )
+  
+  pvals <- NA
+  
+  for(j in 1:iter){
+    for(i in 1:dim(sim_data)[1]){
+      
+      # Generate random values of beta based on mean and se
+      beta <- rnorm(n=8, mean=beta_mean, sd=beta_se)
+      
+      # Generate simulated outcome variable values
+      sim_data$outcome[i] <- beta[1] +
+        beta[2]*sim_data$x1[i] + 
+        beta[3]*sim_data$x2[i] +
+        beta[4]*sim_data$x3[i] +
+        beta[5]*sim_data$x1[i]*sim_data$x2[i] +
+        beta[6]*sim_data$x1[i]*sim_data$x3[i]
+    }
+    
+    # Run linear model for 2^3 data with all interaction terms
+    model1 <- lm(outcome ~ x1+x2+x3+x1*x2+x1*x3, data=sim_data)
+    
+    # Extract p-value and store it
+    f <- summary(model1)$fstatistic
+    pvals[j] <- pf(f[1], f[2], f[3], lower.tail=FALSE)
+  }
+  
+  # Calculate estimate of power
+  power <- sum(pvals<0.05)/iter
+  return(power)
+}
+```
+
+```{r}
+beta_mean <- c(8.3, 0.3333, -0.1667, 0.8333, -1.8333, -0.6667)
+beta_se   <- c(0.6597, 0.9329, 0.9329, 0.9329, 1.3194, 1.3194)
+beta_se_low <- 0.75*beta_se
+beta_se_high <- 1.5*beta_se
+
+replicates <- 2:20
+
+power_vals <- NA
+power_low <- NA
+power_high <- NA
+
+for(i in seq_along(replicates)) {
+  power_vals[i] <- power_factorial_32(beta_mean, beta_se, replicates = replicates[i])
+  power_low[i] <- power_factorial_32(beta_mean, beta_se_low, replicates = replicates[i])
+  power_high[i] <- power_factorial_32(beta_mean, beta_se_high, replicates = replicates[i])
+}
+
+power_df <- data.frame(
+  replicates = rep(replicates, 3),
+  power = c(power_low, power_vals, power_high),
+  beta_se = factor(rep(c("low noise", "actual", "high noise"), each = length(replicates)),
+                   levels = c("low noise", "actual", "high noise"))
+)
+
+ggplot(power_df, aes(x = replicates, y = power, color = beta_se)) +
+  geom_line() + geom_point() +
+  labs(
+    title = "Power vs. Replicates (Varying Error Levels)",
+    x = "Replicates per Treatment Combination",
+    y = "Power",
+    color = "Error Level"
+  )
+```
+The plot above shows how power increases as the number of replicates increases under three different error scenarios. The green line represents the actual standard errors observed in the pilot study. Based on that line, around 8 to 10 replicates per treatment combination are needed to achieve 80% power.
+
+Since my pilot already included 6 participants, so I just add 6 more from the previous unused participants, making it a 12-participant dataset, which is enough participants for my full study, and each rating all 6 conditions, this provides more than enough power for the full study. The estimates used for simulation were based on real pilot data, making this a solid foundation for continuing the analysis.
+
+I also checked the usual model assumptions using diagnostic plots and formal tests:
+```{r}
+# Histogram of residuals
+hist(model1$residuals, xlab="residuals", main="Histogram of Residuals")
+
+# QQ-plot of residuals
+qqnorm(model1$residuals)
+qqline(model1$residuals)
+
+# Shapiro-Wilk Test
+shapiro <- shapiro.test(model1$residuals)
+
+shapiro_df <- data.frame(
+  statistic = shapiro$statistic,
+  p_val = shapiro$p.value
+)
+
+kable(shapiro_df)
+
+# Plot of residuals vs. order of data collection
+x <- 1:length(model1$residuals)
+plot(model1$residuals, type = "b", ylab="residuals",
+     main="Residuals vs. order of data collection")
+
+# Plot of residuals vs. fitted values
+plot(model1$fitted.values, model1$residuals,
+     xlab="fitted values", ylab="residuals",
+     main="Residuals vs. fitted values")
+```
+**Comment:** The histogram shows some asymmetry, and the Q-Q plot shows deviation from the normal line at both ends; The Shapiro–Wilk test returned a p-value of 0.047, which is just below the 0.05 threshold, suggesting that residuals are not perfectly normal; The residuals vs. fitted values plot shows no clear trend, indicating constant variance; The residuals vs. order plot shows no systematic drift or pattern over time, supporting the assumption of independence.
+
+Since normality was questionable, I decided to use a permutation test in the full study, which does not rely on distributional assumptions and is more robust when normality is in doubt.
+
+## Full Study
+```{r}
+full_data <- read_excel("data/soda_Full.xlsx", skip = 1)
+colnames(full_data) <- c("participant", "pouring_method", "consumption_method",
+                     "treatment_label", "score")
+
+# Visually
+ggplot(full_data, aes(x = treatment_label, y = score)) +
+  geom_boxplot() +
+  labs(
+    title = "Enjoyment Scores",
+    x = "Treatment Combination",
+    y = "Enjoyment Score (0 ~ 10)"
+  )
+```
+**Comment:** This boxplot provides a quick summary of enjoyment scores for each of the six treatment combinations. Most scores fall within the 7–10 range, with some minor variability across conditions. One or two lower scores appear in the “Can_Direct” and “Center_Direct” groups, but overall, the medians are fairly close together. Overall, the amount of variability looks pretty similar across groups, which is a good sign for equal variance. I will test that more formally later, but based on this, no treatment looks dramatically better or worse than the others.
+
+## Linear Regression Model
+```{r}
+model_lm <- lm(score ~ pouring_method * consumption_method, data = full_data)
+
+output_lm <- summary(model_lm)
+kable(output_lm$coefficients)
+```
+**Comment:** This model estimates how enjoyment scores are affected by the pouring method, the consumption method, and whether there’s any interaction between the two. Based on the regression output, none of the treatment-related effects were statistically significant at the 0.05 level. For example, the interaction between pouring in the center and using a straw had a p-value of 0.78, and the main effect of using a straw had a p-value of 0.60. The smallest p-value among all treatment-related predictors was still above 0.50.
+
+This means I don’t have strong evidence that how the soda was poured or consumed made any meaningful difference in enjoyment. Even the interaction terms, which test whether certain combinations of pouring and drinking method perform differently, weren’t significant. So overall, no treatment combination seems to consistently change how much people enjoy the soda.
+
+## Assumption Checks
+```{r}
+# Histogram of residuals
+hist(model_lm$residuals, xlab="residuals", main="Histogram of Residuals")
+
+# QQ-plot of residuals
+qqnorm(model_lm$residuals)
+qqline(model_lm$residuals)
+
+# Shapiro-Wilk Test
+shapiro_lm <- shapiro.test(model_lm$residuals)
+
+shapiro_df_lm <- data.frame(
+  statistic = shapiro_lm$statistic,
+  p_val = shapiro_lm$p.value
+)
+
+kable(shapiro_df_lm)
+
+# Plot of residuals vs. order of data collection
+x <- 1:length(model_lm$residuals)
+plot(model_lm$residuals, type = "b", ylab="residuals",
+     main="Residuals vs. order of data collection")
+
+# Plot of residuals vs. fitted values
+plot(model_lm$fitted.values, model_lm$residuals,
+     xlab="fitted values", ylab="residuals",
+     main="Residuals vs. fitted values")
+
+```
+**Comment:** To evaluate whether the assumptions of the linear regression model were met in the full study, I examined several residual diagnostic plots. The histogram of residuals appeared fairly flat rather than bell-shaped, and the Q-Q plot showed a noticeable curve at both ends, suggesting a departure from normality. This was confirmed by the Shapiro–Wilk test, which returned a W value of 0.92715 and a p-value of 0.00045 — well below the 0.05 threshold — meaning I can confidently reject the assumption of normally distributed residuals. On the other hand, the residuals vs. fitted values plot showed no pattern or funnel shape, suggesting that the equal variance assumption was satisfied. Similarly, the residuals vs. order of data collection plot showed no systematic trend over time, which supports the independence assumption. Because the normality assumption clearly failed, I followed up with a permutation test to evaluate treatment effects without relying on distributional assumptions. This decision is also supported by previous research: “data from sensory experiments like this often violate standard ANOVA assumptions, so using a nonparametric method is a smart move” (Villanueva et al., 2000).
+
+## Permutation Test
+```{r}
+set.seed(2000)
+
+anova_obs <- aov(score ~ treatment_label, data = full_data)
+F_obs <- summary(anova_obs)[[1]][["F value"]][1]
+F_perm <- NA
+
+for (i in 1:1000) {
+  perm_data  <- full_data
+  perm_data$treatment_label <- sample(perm_data$treatment_label)
+  perm_model <- aov(score ~ treatment_label, data = perm_data)
+  F_perm[i] <- summary(perm_model)[[1]][["F value"]][1]
+}
+
+perm_p_val <- mean(F_perm >= F_obs)
+# perm_p_val
+```
+**Comment:** Because the Q-Q plot showed strong curvature and the Shapiro–Wilk test returned a p-value of 0.00045, it was clear that the normality assumption did not hold. To deal with this, I used a permutation test, which doesn’t rely on normality and is more reliable when that assumption is violated. In this test, I randomly shuffled the treatment labels 1,000 times and recalculated a one-way ANOVA for each shuffled dataset. This gave me a distribution of F-statistics under the null hypothesis. I then compared the F-statistic from the actual data to this distribution to get an empirical p-value. The result was a p-value of 0.823, meaning that about 82% of the randomized datasets produced an F-statistic as large or larger than the one observed. This suggests that the observed F-statistic is not unusual under the null hypothesis. Therefore, just like the linear regression model, this test provides no strong evidence that any of the six soda-serving combinations had a real impact on how much participants enjoyed the drink.
+
+# Discussion
+
+In this experiment, I investigated whether two seemingly small factor, the way we pour the soda and how we drink it, would influence how much we enjoy it. I used a $3 \times 2$ full factorial design with blocking, and a total of 12 UCSB students participated in the full study, each tasting all six treatment combinations. After running a linear regression model, I found no significant effects of either the pouring method, the consumption method, or their interaction on enjoyment scores. Since my residual diagnostics raised some concerns about normality, I also ran a permutation test as a backup, which confirmed that there were still no significant treatment effects.
+
+In this setting, the two factors(how you pour the soda & whether you use a straw) did not seem to make a significance difference in how much people enjoyed drinking it. This is interesting because past research has shown that container shape and carbonation can affect sensory experience. For example, the vessel and serving conditions can influence sensory perception (Spence and Wan, 2014), and carbonation retention can change based on pouring technique (Viejo et al., 2019). but my study did not find a strong enough effect to support those conclusions. One potential reason is that maybe the different containers and different ways to consume soda is not very obvious to my participants, and another potential reason is that maybe the sample size is not big enough to show this since my sample size for the full study only contains 12 participants, which is smaller than 30(considered as a large sample size).
+
+There are several issues that may have affected the validity of the results. 
+
+First off, the normality assumption was not satisfied. The Q-Q plot showed clear deviation, and the Shapiro–Wilk test gave a low p-value. While linear models are fairly robust to small violations, this justified using a permutation test, which doesn’t rely on normality. The fact that the permutation test still showed no effect supports the conclusion—but it’s also worth noting that “data from sensory experiments like this often violate standard ANOVA assumptions, so using a nonparametric method is a smart move” (Villanueva et al., 2000).
+
+Secondly, although the study design used a randomized complete with each participant trying all six conditions, there are still some possible limitations in the data collection process. Those participants may not have been very focused on how they rated their samples. And also, although the soda was kept fresh as much as possible, but there was still a risk of carbonation fading for combinations that were tasted later. I tried to minimize this by not opening each can until a participant was ready to start their taste round, but it was not always perfect, such as some people tried drink from the can first, but some people tried that combination in the last.
+
+Thirdly, the subjective nature of enjoyment scores adds variability that is hard to control. Most participants used the upper half of the 0 ~ 10 scale,and this may reduce the ability to detect real differences between treatment combinations. 
+
+In addition, taste is influenced by many factors that are hard to control as well, such as one's mood and recent food or drink consuming, all of which could obscure more subtle treatment effects.
+
+In conclusion, this study suggests that small things like how you pour or drink soda probably don’t matter much for enjoyment, at least not for this group of people. For food companies or service providers, that could mean these factors aren’t worth stressing over. But it’s also important to say that not finding significance doesn’t prove there’s no effect. Maybe a more controlled lab setting, a different population, a larger sample size, or additional factors (like flavor, temperature, or brand) would alter the result.
+
+# References
+
+Gonzalez Viejo, Claudia, et al. Bubbles, Foam Formation, Stability and Consumer Perception of Carbonated Drinks: A Review of Current, New and Emerging Technologies for Rapid Assessment and Control. Foods, vol. 8, no. 12, 20 Nov. 2019, p. 596.
+
+Spence, Charles, and Xiaoang Wan. Beverage Perception and Consumption: The Influence of the Container on the Perception of the Contents. Food Quality and Preference, vol. 39, 17 July 2014, pp. 131–140.
+
+Villanueva, Nilda D.M, et al. “Performance of Three Affective Methods and Diagnosis of the ANOVA Model.” Food Quality and Preference, vol. 11, no. 5, 14 July 2000, pp. 363–370.
