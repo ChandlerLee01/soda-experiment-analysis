@@ -115,7 +115,7 @@ soda-experiment-analysis/
 - README.md  
 - analysis.Rmd  
 - data/  
-- plot/  
+- plots/  
 
 ---
 
@@ -142,6 +142,6 @@ soda-experiment-analysis/
 
 ## Visualization
 
-![Enjoyment Scores by Treatment](plot/boxplot.png)
+![Enjoyment Scores by Treatment](plots/boxplot.png)
 
 This project was conducted as part of a designed experiment and reflects a complete workflow from data collection to statistical analysis.
